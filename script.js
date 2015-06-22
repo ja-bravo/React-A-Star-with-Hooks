@@ -1,35 +1,50 @@
-var canvas;
-var screen;
+var canvas = document.getElementById("canvas");
+
+var cells = [];
 
 function Init()
 {
-	canvas = document.getElementById("canvas");
-	screen = canvas.getContext("2d");
+	DrawBoard();
+	canvas.addEventListener("click", OnClick, false);
+}
 
-	Draw();
+function Cell(row,column,type)
+{
+	this.row = row;
+	this.column = column;
+	this.type = type;
 }
 
 
-function Draw()
+function DrawBoard()
 {
-	screen.beginPath();
-	alert("da");
-	for (var x = 0; x <= 800; x += 32)
+	var tileSize = 20;
+	var screen = canvas.getContext("2d");
+
+	screen.lineWidth = "1";
+	var column = 0;
+	var row = 0;
+
+	for (var y = 0; y <= 600; y += tileSize)
 	{
-		screen.moveTo(0.5 + x, 0);
-		screen.lineTo(0.5 + x, 32);
+		for (var x = 0; x <= 800; x += tileSize)
+		{
+			screen.moveTo(x, y);
+			screen.lineTo(tileSize + x, y);
+			screen.lineTo(tileSize + x, y+tileSize);
+
+			cells.push(new Cell(row,column,"passable"));
+			column++;
+		}
+		row++;
 	}
 
-	for (var y = 0; y <= 600; y += 32)
-	{
-		screen.moveTo(0,  0.5 + y);
-		screen.lineTo(32, 0.5 + y);
-	}
-
-
-	screen.strokeStyle = "#ccc";
+	screen.strokeStyle = "black";
     screen.stroke();
+}
 
-    alert("listO");
-    
+function OnClick(event)
+{
+	// TODO
+	alert("click");
 }
