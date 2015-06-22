@@ -1,10 +1,17 @@
 var canvas = document.getElementById("canvas");
-
-var cells = [];
+var tileSize = 20;
+var canvasWidth = 800;
+var canvasHeight = 600;
+var cells = new Array(canvasHeight/tileSize);
 
 function Init()
 {
-	DrawBoard();
+	
+	for (var i=0;i<canvasHeight/tileSize;i++) 
+	{
+    	cells[i] = new Array(canvasWidth/tileSize);
+  	}
+  	DrawBoard();
 	canvas.addEventListener("click", OnClick, false);
 }
 
@@ -18,22 +25,22 @@ function Cell(row,column,type)
 
 function DrawBoard()
 {
-	var tileSize = 20;
 	var screen = canvas.getContext("2d");
 
 	screen.lineWidth = "1";
 	var column = 0;
 	var row = 0;
 
-	for (var y = 0; y <= 600; y += tileSize)
+	for (var y = 0; y <= canvasHeight; y += tileSize)
 	{
-		for (var x = 0; x <= 800; x += tileSize)
+		for (var x = 0; x <= canvasWidth; x += tileSize)
 		{
 			screen.moveTo(x, y);
 			screen.lineTo(tileSize + x, y);
 			screen.lineTo(tileSize + x, y+tileSize);
 
-			cells.push(new Cell(row,column,"passable"));
+			cells[row][column] = new Cell(row,column,"passable");
+			console.log("asd");
 			column++;
 		}
 		row++;
@@ -45,6 +52,12 @@ function DrawBoard()
 
 function OnClick(event)
 {
-	// TODO
-	alert("click");
+	var canvasPosition = $('#canvas').position();
+	var canvasX = Math.round(canvasPosition.left);
+	var canvasY = Math.round(canvasPosition.top);
+
+
+	var xInGrid = Math.trunc((event.pageX-canvasX)/20);
+	var yInGrid = Math.trunc((event.pageY-canvasY)/20);
+	alert(xInGrid  +" " + yInGrid);
 }
