@@ -3,6 +3,7 @@ var tileSize = 20;
 var canvasWidth = 800;
 var canvasHeight = 600;
 var cells = [];
+var mouseState = -1;
 
 function Init()
 {
@@ -12,7 +13,8 @@ function Init()
     	cells[i] = [];
   	}
   	DrawBoard();
-	canvas.addEventListener("click", OnClick, false);
+	canvas.addEventListener("mousedown", MouseDown, false);
+	canvas.addEventListener("mouseup", MouseUp, false);
 }
 
 function Cell(row,column,x,y,type)
@@ -52,6 +54,46 @@ function DrawBoard()
     screen.stroke();
 }
 
+function DrawCells()
+{
+	for(var i = 0; i < canvasHeight/tileSize; i++)
+	{
+		for (var j = 0; j < canvasWidth/tileSize; j++)
+		{
+			if(cells[i][j].type == "blocked")
+		 	{
+		 		PaintCell(cells[i][j].x,cells[i][j].y,"#5B0202");
+		 	}
+		}
+	}
+}
+
+function PaintCell(x,y,color)
+{
+	var screen = canvas.getContext("2d");
+
+	// Fill the cell with a color
+	screen.beginPath();
+
+	screen.moveTo(x,y);
+	screen.rect(x,y,tileSize,tileSize);
+	screen.fillStyle = color;
+	screen.fill();
+
+	screen.closePath();
+
+	// Draw a border around it.
+	screen.beginPath();
+
+	screen.moveTo(x,y);
+	screen.rect(x,y,tileSize,tileSize);
+	screen.strokeStyle = "black";
+	screen.stroke();
+
+	screen.closePath();
+
+}
+
 function OnClick(event)
 {
 	var canvasPosition = $('#canvas').position();
@@ -63,6 +105,25 @@ function OnClick(event)
 	var yInGrid = Math.trunc((event.pageY-canvasY)/20);
 	
 	var screen = canvas.getContext("2d");
-	
-	// TODO: Change the cell state and paint it.
+	cells[yInGrid][xInGrid].type = "blocked";
+	DrawCells();
+}
+
+// TODO: Be able to drag to paint cells.
+function MouseDown(event)
+{
+	if(mouseState == -1)
+	{
+		mouseState = setInterval(OnClick(event),1);
+	}
+}
+
+// TODO: Be able to drag to paint cells.
+function MouseUp()
+{
+	if(mouseState != -1)
+	{
+		clearInterval(mouseState);
+		mouseState = -1;
+	}
 }
