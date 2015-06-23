@@ -62,7 +62,12 @@ function DrawCells()
 		{
 			if(cells[i][j].type == "blocked")
 		 	{
+		 		console.dir(cells[i][j]);
 		 		PaintCell(cells[i][j].x,cells[i][j].y,"#5B0202");
+		 	}
+		 	else
+		 	{
+		 		PaintCell(cells[i][j].x,cells[i][j].y,"white");
 		 	}
 		}
 	}
@@ -104,8 +109,10 @@ function OnClick(event)
 	var xInGrid = Math.trunc((event.pageX-canvasX)/20);
 	var yInGrid = Math.trunc((event.pageY-canvasY)/20);
 	
+	var cell = cells[yInGrid][xInGrid];
 	var screen = canvas.getContext("2d");
-	cells[yInGrid][xInGrid].type = "blocked";
+	
+	cell.type = cell.type == "passable"?"blocked":"passable";
 	DrawCells();
 }
 
