@@ -7,7 +7,9 @@ var canvasWidth   = 800;
 var canvasHeight  = 600;
 var cells         = [];
 var mouseState    = -1;
-var type = "blocked";
+var type 	 	  = "blocked";
+var startCell 	  = null;
+var endCell 	  = null;
 
 function Init()
 {
@@ -19,16 +21,11 @@ function Init()
   	DrawBoard();
 	canvas.addEventListener("mousedown", MouseDown, false);
 	canvas.addEventListener("mouseup", MouseUp, false);
-
-	// TODO: Fix the onclick event.
-	buttonBlocked.addEventListener("click",ChangeType("blocked"),false);
-	buttonStart.addEventListener("click",ChangeType("start"),false);
-	buttonEnd.addEventListener("click",ChangeType("end"),false);
 }
 
-function ChangeType(asd)
+function ChangeType(cellType)
 {
-	type = asd;
+	type = cellType;
 }
 
 function Cell(row,column,x,y,type)
@@ -132,16 +129,51 @@ function OnClick(event)
 	
 	var cell = cells[yInGrid][xInGrid];
 	var screen = canvas.getContext("2d");
+
+	switch(cell.type)
+	{
+		case "passable":
+			cell.type = type;
+			break;
+
+		default:
+			if(type != cell.type)
+			{
+				cell.type = type;
+			}
+			else
+			{
+				cell.type = "passable";
+			}
+			break;
+	}
+
+	if(startCell !== null && type == "start")
+	{
+		startCell.type = "passable";
+
+		startCell = cell;
+		startCell.type = "start";
+	}
+	else if (startCell === null && type == "start")
+	{
+		startCell = cell;
+	}
+
+	if(endCell !== null && type == "end")
+	{
+		endCell.type = "passable";
+
+		endCell = cell;
+		endCell.type = "end";
+	}
+	else if (endCell === null && type == "end")
+	{
+		endCell = cell;
+	}
 	
-	if(cell.type != "passable")
-	{
-		cell.type = "passable";
-	}
-	else
-	{
-		cell.type = type;
-	}
 	DrawCells();
+	console.log(type);
 }
 
 // TODO: Be able to drag to paint cells.
