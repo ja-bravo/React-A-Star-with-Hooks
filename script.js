@@ -1,9 +1,13 @@
-var canvas = document.getElementById("canvas");
-var tileSize = 20;
-var canvasWidth = 800;
-var canvasHeight = 600;
-var cells = [];
-var mouseState = -1;
+var canvas        = document.getElementById("canvas");
+var buttonBlocked = document.getElementById("blocked");
+var buttonStart   = document.getElementById("start");
+var buttonEnd     = document.getElementById("end");
+var tileSize 	  = 20;
+var canvasWidth   = 800;
+var canvasHeight  = 600;
+var cells         = [];
+var mouseState    = -1;
+var type = "blocked";
 
 function Init()
 {
@@ -15,6 +19,16 @@ function Init()
   	DrawBoard();
 	canvas.addEventListener("mousedown", MouseDown, false);
 	canvas.addEventListener("mouseup", MouseUp, false);
+
+	// TODO: Fix the onclick event.
+	buttonBlocked.addEventListener("click",ChangeType("blocked"),false);
+	buttonStart.addEventListener("click",ChangeType("start"),false);
+	buttonEnd.addEventListener("click",ChangeType("end"),false);
+}
+
+function ChangeType(asd)
+{
+	type = asd;
 }
 
 function Cell(row,column,x,y,type)
@@ -60,13 +74,22 @@ function DrawCells()
 	{
 		for (var j = 0; j < canvasWidth/tileSize; j++)
 		{
-			if(cells[i][j].type == "blocked")
+			var cell = cells[i][j];
+			if(cell.type == "blocked")
 		 	{
-		 		PaintCell(cells[i][j].x,cells[i][j].y,"#5B0202");
+		 		PaintCell(cell.x,cell.y,"#52504b");
+		 	}
+		 	else if (cell.type == "start")
+		 	{
+		 		PaintCell(cell.x,cell.y,"#dbd90c");
+		 	}
+		 	else if (cell.type == "end")
+		 	{
+		 		PaintCell(cell.x,cell.y,"#16b1cd");
 		 	}
 		 	else
 		 	{
-		 		PaintCell(cells[i][j].x,cells[i][j].y,"white");
+		 		PaintCell(cell.x,cell.y,"white");
 		 	}
 		}
 	}
@@ -110,7 +133,14 @@ function OnClick(event)
 	var cell = cells[yInGrid][xInGrid];
 	var screen = canvas.getContext("2d");
 	
-	cell.type = cell.type == "passable"?"blocked":"passable";
+	if(cell.type != "passable")
+	{
+		cell.type = "passable";
+	}
+	else
+	{
+		cell.type = type;
+	}
 	DrawCells();
 }
 
