@@ -62,7 +62,6 @@ function DrawCells()
 		{
 			if(cells[i][j].type == "blocked")
 		 	{
-		 		console.dir(cells[i][j]);
 		 		PaintCell(cells[i][j].x,cells[i][j].y,"#5B0202");
 		 	}
 		 	else
@@ -101,10 +100,9 @@ function PaintCell(x,y,color)
 
 function OnClick(event)
 {
-	var canvasPosition = $('#canvas').position();
+	var canvasPosition = canvas.getBoundingClientRect();
 	var canvasX = Math.round(canvasPosition.left);
 	var canvasY = Math.round(canvasPosition.top);
-
 
 	var xInGrid = Math.trunc((event.pageX-canvasX)/20);
 	var yInGrid = Math.trunc((event.pageY-canvasY)/20);
