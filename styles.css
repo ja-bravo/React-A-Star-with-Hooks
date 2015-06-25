@@ -54,3 +54,8 @@ span
 {
 	background-color: #16b1cd;
 }
+
+#calculate
+{
+	float: right;
+}

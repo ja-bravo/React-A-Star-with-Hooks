@@ -171,9 +171,7 @@ function OnClick(event)
 	{
 		endCell = cell;
 	}
-	
 	DrawCells();
-	console.log(type);
 }
 
 // TODO: Be able to drag to paint cells.
@@ -192,5 +190,24 @@ function MouseUp()
 	{
 		clearInterval(mouseState);
 		mouseState = -1;
+	}
+}
+
+function Debug()
+{
+	var hCost = 0;
+	var startX = startCell.column+1;
+	var startY = startCell.row;
+
+	while(startX != endCell.column)
+	{
+		startX++;
+		hCost += 10;
+	}
+
+	while(startY != endCell.row)
+	{
+		startY++;
+		hCost += 10;
 	}
 }
