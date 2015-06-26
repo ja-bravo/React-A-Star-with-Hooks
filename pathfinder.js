@@ -93,28 +93,14 @@ function AssignHCost(cell)
 {
 	var hCost = 0;
 	
-	if(endCell.column > cell.column)
-	{
-		hCost = endCell.column - cell.column;
-	}
-	else
-	{
-		hCost = cell.column - endCell.column ;
-	}
-
-	if(endCell.row > cell.row)
-	{
-		hCost += endCell.row - cell.row;
-	}
-	else if (endCell.row < cell.row)
-	{
-		hCost += cell.row - endCell.row;
-	}
+	hCost += Math.abs(cell.column - endCell.column);
+	hCost += Math.abs(cell.row - endCell.row);
 
 	hCost *= 10;
 	hCost -= 10;
 
 	cell.hCost = hCost;
+	console.log(hCost);
 }
 
 function AssignGCost(startingCell,destCell)
