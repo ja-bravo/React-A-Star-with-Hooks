@@ -5,6 +5,8 @@ var buttonEnd     = document.getElementById("end");
 var tileSize 	  = 20;
 var canvasWidth   = 800;
 var canvasHeight  = 600;
+var gridHeight 	  = canvasHeight/tileSize;
+var gridWidth     = canvasWidth/tileSize;
 var cells         = [];
 var mouseState    = -1;
 var type 	 	  = "blocked";
@@ -14,7 +16,7 @@ var endCell 	  = null;
 function Init()
 {
 	
-	for (var i=0;i<canvasHeight/tileSize;i++) 
+	for (var i=0;i<gridHeight;i++) 
 	{
     	cells[i] = [];
   	}
@@ -35,6 +37,7 @@ function Cell(row,column,x,y,type)
 	this.x = x;
 	this.y = y;
 	this.type = type;
+	this.hCost = 0;
 }
 
 
@@ -67,9 +70,9 @@ function DrawBoard()
 
 function DrawCells()
 {
-	for(var i = 0; i < canvasHeight/tileSize; i++)
+	for(var i = 0; i < gridHeight; i++)
 	{
-		for (var j = 0; j < canvasWidth/tileSize; j++)
+		for (var j = 0; j < gridWidth; j++)
 		{
 			var cell = cells[i][j];
 			if(cell.type == "blocked")
@@ -193,21 +196,3 @@ function MouseUp()
 	}
 }
 
-function Debug()
-{
-	var hCost = 0;
-	var startX = startCell.column+1;
-	var startY = startCell.row;
-
-	while(startX != endCell.column)
-	{
-		startX++;
-		hCost += 10;
-	}
-
-	while(startY != endCell.row)
-	{
-		startY++;
-		hCost += 10;
-	}
-}
