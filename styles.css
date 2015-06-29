@@ -28,7 +28,7 @@ body
 {
 	height: 50px;
 	width: 50px;
-	margin-right: 100px;
+	margin-right: 80px;
 	text-align: center;
 	float: left;
 }
@@ -55,7 +55,8 @@ span
 	background-color: #16b1cd;
 }
 
-button
+#buttons
 {
 	float: right;
+	margin-right: 30px;
 }

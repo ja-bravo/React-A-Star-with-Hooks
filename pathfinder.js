@@ -1,121 +1,159 @@
-var openList   = [];
-var closedList = [];
-var path       = [];
+var openList      = [];
+var closedList    = [];
+var path          = [];
+var NORMAL_COST   = 10;
+var DIAGONAL_COST = 14;
+var TOTALCOST     = 0;
 function GetNeighbors(cell)
 {
 	var neighbors = [];
-
+	var allowDiagonal = document.getElementById("allowDiagonal").checked;
 	// UNCOMMENT TO ALLOW DIAGONAL MOVEMENT
 	if (cell.column === 0 && cell.row > 0 && cell.row < gridHeight-1) // Left wall with out top/bottom
 	{
 		neighbors.push(cells[cell.row-1][cell.column]);
-		//neighbors.push(cells[cell.row-1][cell.column+1]);
-
 		neighbors.push(cells[cell.row][cell.column+1]);
+		neighbors.push(cells[cell.row+1][cell.column]);	
 
-		neighbors.push(cells[cell.row+1][cell.column]);
-		//neighbors.push(cells[cell.row+1][cell.column+1]);
+		if(allowDiagonal)
+		{
+			neighbors.push(cells[cell.row-1][cell.column+1]);
+			neighbors.push(cells[cell.row+1][cell.column+1]);
+		}
 	}
 	else if (cell.column === 0 && cell.row === 0) // Left top
 	{
 		neighbors.push(cells[cell.row][cell.column+1]);
 
 		neighbors.push(cells[cell.row+1][cell.column]);
-		//neighbors.push(cells[cell.row+1][cell.column+1]);
+		
+		if(allowDiagonal)
+		{
+			neighbors.push(cells[cell.row+1][cell.column+1]);
+		}
 	}
 	else if (cell.column === 0 && cell.row === gridHeight-1) // Left bottom
 	{
 		neighbors.push(cells[cell.row][cell.column+1]);
 
 		neighbors.push(cells[cell.row-1][cell.column]);
-		//neighbors.push(cells[cell.row-1][cell.column+1]);
+		
+		if(allowDiagonal)
+		{
+		}
 	}
 	else if (cell.column === gridWidth-1 && cell.row > 0 && cell.row < gridHeight-1) // Right wall with out top/bottom
 	{
 		neighbors.push(cells[cell.row-1][cell.column]);
-		//neighbors.push(cells[cell.row-1][cell.column-1]);
+		
 
 		neighbors.push(cells[cell.row][cell.column-1]);
 
 		neighbors.push(cells[cell.row+1][cell.column]);
-		//neighbors.push(cells[cell.row+1][cell.column-1]);
+		
+		if(allowDiagonal)
+		{
+			neighbors.push(cells[cell.row-1][cell.column-1]);
+			neighbors.push(cells[cell.row+1][cell.column-1]);
+		}
 	}
 	else if (cell.column === gridWidth-1 && cell.row === 0) // Right top
 	{
 		neighbors.push(cells[cell.row][cell.column-1]);
 
 		neighbors.push(cells[cell.row+1][cell.column]);
-		//neighbors.push(cells[cell.row+1][cell.column-1]);
+	
+		if(allowDiagonal)
+		{
+			neighbors.push(cells[cell.row+1][cell.column-1]);
+		}
 	}
 	else if (cell.column === gridWidth-1 && cell.row === gridHeight-1) // Right bottom
 	{
 		neighbors.push(cells[cell.row][cell.column-1]);
 
 		neighbors.push(cells[cell.row-1][cell.column]);
-		//neighbors.push(cells[cell.row-1][cell.column-1]);
+		
+		if(allowDiagonal)
+		{
+			neighbors.push(cells[cell.row-1][cell.column-1]);
+		}
 	}
 	else if (cell.column >= 1 && cell.column < gridWidth-1 && cell.row === 0) // Top wall with out left/right tile
 	{
 		neighbors.push(cells[cell.row][cell.column-1]);
 		neighbors.push(cells[cell.row][cell.column+1]);
 
-		//neighbors.push(cells[cell.row+1][cell.column-1]);
+		
 		neighbors.push(cells[cell.row+1][cell.column]);
-		//neighbors.push(cells[cell.row+1][cell.column+1]);
+		
+		if(allowDiagonal)
+		{
+			neighbors.push(cells[cell.row+1][cell.column-1]);
+			neighbors.push(cells[cell.row+1][cell.column+1]);
+		}
 	}
 	else if (cell.column >= 1 && cell.column < gridWidth-1 && cell.row === gridHeight-1) // Bottom wall with out left/right tile
 	{
 		neighbors.push(cells[cell.row][cell.column-1]);
 		neighbors.push(cells[cell.row][cell.column+1]);
 
-		//neighbors.push(cells[cell.row-1][cell.column-1]);
+		
 		neighbors.push(cells[cell.row-1][cell.column]);
-		//neighbors.push(cells[cell.row-1][cell.column+1]);
+		
+		if(allowDiagonal)
+		{
+			neighbors.push(cells[cell.row-1][cell.column-1]);
+			neighbors.push(cells[cell.row-1][cell.column+1]);
+		}
 	}
 	else
 	{
-		//neighbors.push(cells[cell.row+1][cell.column-1]);
+		
 		neighbors.push(cells[cell.row+1][cell.column]);
-		//neighbors.push(cells[cell.row+1][cell.column+1]);
 
 		neighbors.push(cells[cell.row][cell.column-1]);
 		neighbors.push(cells[cell.row][cell.column+1]);
-
-		//neighbors.push(cells[cell.row-1][cell.column-1]);
+		
 		neighbors.push(cells[cell.row-1][cell.column]);
-		//neighbors.push(cells[cell.row-1][cell.column+1]);
+		
+		if(allowDiagonal)
+		{
+			neighbors.push(cells[cell.row+1][cell.column-1]);
+			neighbors.push(cells[cell.row+1][cell.column+1]);
+			neighbors.push(cells[cell.row-1][cell.column-1]);
+			neighbors.push(cells[cell.row-1][cell.column+1]);
+		}
 	}
 
 	return neighbors;
 }
 
-function AssignHCost(cell)
+function GetHCost(cell)
 {
 	var hCost = 0;
 	
-	hCost += Math.abs(cell.column - endCell.column);
-	hCost += Math.abs(cell.row - endCell.row);
+	var dx = Math.abs(cell.column - endCell.column);
+	var dy = Math.abs(cell.row - endCell.row);
 
-	hCost *= 10;
-	hCost -= 10;
 
-	cell.hCost = hCost;
+	return NORMAL_COST * (dx + dy) + (DIAGONAL_COST -  2 * NORMAL_COST) * Math.min(dx,dy);
 }
 
-function AssignGCost(startingCell,destCell)
+function GetGCost(startingCell,destCell)
 {
 	var gCost = 0;
 	if(startingCell.row == destCell.row ||
 	   startingCell.column == destCell.column )
 	{
-		gCost = 10;
+		gCost = startingCell.gCost + NORMAL_COST;
 	}
 	else
 	{
-		gCost = 14;
+		gCost = startingCell.gCost + DIAGONAL_COST;
 	}
 
-	destCell.gCost = gCost;
+	return gCost;
 }
 
 function GetLowestFIndex()
@@ -150,6 +188,7 @@ function GetLowestFIndex()
 
 function SetGrid()
 {
+	TOTALCOST = 0;
 	for(var i = 0; i < gridHeight; i++)
 	{
 		for (var j = 0; j < gridWidth; j++)
@@ -160,7 +199,6 @@ function SetGrid()
 			cell.fCost = 0;
 			cell.hCost = 0;
 			cell.parent = null;
-			cell.visited = false;
 
 			if(cell.type == "start")
 			{
@@ -169,6 +207,10 @@ function SetGrid()
 			else if(cell.type == "end")
 			{
 				endCell = cell;
+			}
+			else if(cell.type == "passable")
+			{
+				PaintCell(cell.x,cell.y,"white");
 			}
 		}
 	}
@@ -188,11 +230,37 @@ function Restart()
 			cell.fCost = 0;
 			cell.hCost = 0;
 			cell.parent = null;
-			cell.visited = false;
 			cell.type = "passable";
 			PaintCell(cell.x,cell.y,"white");
 		}
 	}
+}
+
+function IsInArray(cell,cellsToSearch)
+{
+	for(var i = 0; i < cellsToSearch.length; i++)
+	{
+		array_cell = cellsToSearch[i];
+		if(array_cell == cell)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function GetIndex(cell)
+{
+	for(var i = 0; i < openList.length; i++)
+	{
+		if(openList[i] == cell)
+		{
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 function Search()
@@ -201,15 +269,17 @@ function Search()
 	openList = [];
 	closedList = [];
 
-	openList.push(startCell);
+	startCell.gCost = 0;
+	startCell.hCost = GetHCost(startCell);
+	startCell.fCost = startCell.gCost + startCell.hCost;
 
+	openList.push(startCell);
 	while(openList.length > 0)
 	{
 		var lowCellIndex = GetLowestFIndex();
 		var currentCell = openList[lowCellIndex];
 
-		if(currentCell.column == endCell.column &&
-		   currentCell.row == endCell.row)
+		if(currentCell == endCell)
 		{
 			var current = currentCell.parent;
 			path = [];
@@ -230,35 +300,34 @@ function Search()
 		for(var i = 0; i < neighbors.length; i++)
 		{	
 			var neighbor = neighbors[i];
+			neighbor.gCost = GetGCost(currentCell,neighbor);
+			neighbor.hCost = GetHCost(neighbor);
+			neighbor.fCost = neighbor.gCost + neighbor.fCost;
 
-			if(neighbor.type == "passable")
-			{
-				PaintCell(neighbor.x, neighbor.y,"#F5A9A9");
-			}
-
-			if(neighbor.type == "blocked")
+			if(neighbor.type == "blocked" || IsInArray(neighbor,closedList))
 			{
 				continue;
 			}
 
-			if(neighbor.visited === false)
+			if(IsInArray(neighbor,openList) && currentCell.gCost < neighbor.gCost)
 			{
-				AssignGCost(currentCell,neighbor);
-				AssignHCost(neighbor);
-				neighbor.fCost = neighbor.hCost + neighbor.gCost;
-				neighbor.parent = currentCell;
-
-				openList.push(neighbor);
-				neighbor.visited = true;
+				openList.splice(GetIndex(neighbor),1);
 			}
-			else if(neighbor.gCost > currentCell.gCost)
+			
+			if(!IsInArray(neighbor,openList) && !IsInArray(neighbor,closedList))
 			{
-				AssignGCost(currentCell,neighbor);
-				AssignHCost(neighbor);
-				neighbor.fCost = neighbor.hCost + neighbor.gCost;
+				neighbor.gCost = currentCell.gCost;
+				neighbor.fCost = neighbor.gCost + neighbor.hCost;
 				neighbor.parent = currentCell;
+				openList.push(neighbor);
+
+				if(neighbor.type == "passable")
+				{
+					PaintCell(neighbor.x, neighbor.y,"#A9E2F3");
+				}
 			}
 		}
+		TOTALCOST += currentCell.fCost;
 	}
 	return [];
 }
@@ -275,7 +344,8 @@ function GetPath()
 	{
 		for(var i = 0; i < path.length; i++)
 		{
-			PaintCell(path[i].x,path[i].y,"blue");
+			PaintCell(path[i].x,path[i].y,"#81F781");
 		}
+		alert("Movement cost: " + TOTALCOST);
 	}
 }

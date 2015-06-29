@@ -41,7 +41,6 @@ function Cell(row,column,x,y,type)
 	this.gCost = 0;
 	this.fCost = 0;
 	this.parent = null;
-	this.visited = false;
 }
 
 
