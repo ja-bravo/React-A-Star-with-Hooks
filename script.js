@@ -38,6 +38,8 @@ function Cell(row,column,x,y,type)
 	this.y = y;
 	this.type = type;
 	this.hCost = 0;
+	this.gCost = 0;
+	this.fCost = 0;
 	this.parent = null;
 	this.visited = false;
 }

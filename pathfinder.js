@@ -1,5 +1,6 @@
 var openList   = [];
 var closedList = [];
+var path       = [];
 function GetNeighbors(cell)
 {
 	var neighbors = [];
@@ -149,15 +150,47 @@ function GetLowestFIndex()
 
 function SetGrid()
 {
-	for(var cell in cells)
+	for(var i = 0; i < gridHeight; i++)
 	{
-		if(cell.type == "start")
+		for (var j = 0; j < gridWidth; j++)
 		{
-			startCell = cell;
+			var cell = cells[i][j];
+
+			cell.gCost = 0;
+			cell.fCost = 0;
+			cell.hCost = 0;
+			cell.parent = null;
+			cell.visited = false;
+
+			if(cell.type == "start")
+			{
+				startCell = cell;
+			}
+			else if(cell.type == "end")
+			{
+				endCell = cell;
+			}
 		}
-		else if(cell.type == "end")
+	}
+}
+
+function Restart()
+{
+	startCell = null;
+	endCell   = null;
+	for(var i = 0; i < gridHeight; i++)
+	{
+		for (var j = 0; j < gridWidth; j++)
 		{
-			endCell = cell;
+			var cell = cells[i][j];
+
+			cell.gCost = 0;
+			cell.fCost = 0;
+			cell.hCost = 0;
+			cell.parent = null;
+			cell.visited = false;
+			cell.type = "passable";
+			PaintCell(cell.x,cell.y,"white");
 		}
 	}
 }
@@ -165,7 +198,11 @@ function SetGrid()
 function Search()
 {
 	SetGrid();
+	openList = [];
+	closedList = [];
+
 	openList.push(startCell);
+
 	while(openList.length > 0)
 	{
 		var lowCellIndex = GetLowestFIndex();
@@ -175,7 +212,7 @@ function Search()
 		   currentCell.row == endCell.row)
 		{
 			var current = currentCell.parent;
-			var path = [];
+			path = [];
 
 			while(current != startCell)
 			{
@@ -191,8 +228,13 @@ function Search()
 		var neighbors = GetNeighbors(currentCell);
 
 		for(var i = 0; i < neighbors.length; i++)
-		{
+		{	
 			var neighbor = neighbors[i];
+
+			if(neighbor.type == "passable")
+			{
+				PaintCell(neighbor.x, neighbor.y,"#F5A9A9");
+			}
 
 			if(neighbor.type == "blocked")
 			{
@@ -203,34 +245,37 @@ function Search()
 			{
 				AssignGCost(currentCell,neighbor);
 				AssignHCost(neighbor);
+				neighbor.fCost = neighbor.hCost + neighbor.gCost;
 				neighbor.parent = currentCell;
 
 				openList.push(neighbor);
 				neighbor.visited = true;
-				
-				if(currentCell.type == "passable")
-				{
-					PaintCell(currentCell.x, currentCell.y,"red");
-				}
 			}
 			else if(neighbor.gCost > currentCell.gCost)
 			{
 				AssignGCost(currentCell,neighbor);
 				AssignHCost(neighbor);
+				neighbor.fCost = neighbor.hCost + neighbor.gCost;
 				neighbor.parent = currentCell;
 			}
 		}
 	}
-
+	return [];
 }
 
 function GetPath()
 {
-	var path = Search();
+	path = Search();
 
-	for(var i = 0; i < path.length; i++)
+	if(path.length === 0)
 	{
-		console.log("PINTA PEPO");
-		PaintCell(path[i].x,path[i].y,"blue");
+		alert("Path not found!");
+	}
+	else
+	{
+		for(var i = 0; i < path.length; i++)
+		{
+			PaintCell(path[i].x,path[i].y,"blue");
+		}
 	}
 }
