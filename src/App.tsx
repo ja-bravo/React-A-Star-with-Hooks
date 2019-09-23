@@ -41,6 +41,6 @@ const App: React.FC = () => {
       <Stage />
     </AppWapper>
   );
-}
+};
 
 export default App;

@@ -8,7 +8,6 @@ export const Wrapper = styled.div`
   position: absolute;
   top: 16px;
   right: 16px;
-
   display: flex;
   flex-direction: column;
 `;
